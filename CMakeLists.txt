@@ -28,11 +28,6 @@ configure_file (
     "${XCANVAS_INCLUDE_DIR}/xcanvas/xcanvas_config_cling.hpp"
 )
 
-configure_file (
-    "${XCANVAS_INCLUDE_DIR}/xcanvas/xget_basemaps_path.hpp.in"
-    "${XCANVAS_INCLUDE_DIR}/xcanvas/xget_basemaps_path.hpp"
-)
-
 # Versionning
 # ===========
 
