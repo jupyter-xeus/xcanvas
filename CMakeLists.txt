@@ -59,8 +59,9 @@ message(STATUS "xcanvas binary version: v${XCANVAS_BINARY_VERSION}")
 # Dependencies
 # ============
 
-find_package(xtl 0.6.5 REQUIRED)
-find_package(xeus 0.23.3 REQUIRED)
+find_package(xtl 0.7.0 REQUIRED)
+find_package(xeus 2.0.0 REQUIRED)
+find_package(xproperty 0.11.0 REQUIRED)
 find_package(xwidgets 0.20.0 REQUIRED)
 
 # Source files
@@ -110,9 +111,7 @@ target_compile_features(xcanvas PRIVATE cxx_std_14)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     target_compile_options(xcanvas PUBLIC -Wunused-parameter -Wextra -Wreorder)
-    if (DISABLE_ARCH_NATIVE)
-        target_compile_options(xcanvas PUBLIC -mtune=generic)
-    else()
+    if (NOT DISABLE_ARCH_NATIVE)
         target_compile_options(xcanvas PUBLIC -march=native)
     endif()
 
