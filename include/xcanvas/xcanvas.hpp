@@ -9,9 +9,12 @@
 #ifndef XCANVAS_HPP
 #define XCANVAS_HPP
 
+#include <iostream>
+
 #include <array>
 #include <functional>
 #include <list>
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -35,18 +38,28 @@ namespace nl = nlohmann;
 
 namespace xc
 {
-    enum COMMANDS {
-        fillRect, strokeRect, fillRects, strokeRects, clearRect, fillArc,
-        fillCircle, strokeArc, strokeCircle, fillArcs, strokeArcs,
-        fillCircles, strokeCircles, strokeLine, beginPath, closePath,
-        stroke, fillPath, fill, moveTo, lineTo,
-        rect, arc, ellipse, arcTo, quadraticCurveTo,
-        bezierCurveTo, fillText, strokeText, setLineDash, drawImage,
-        putImageData, clip, save, restore, translate,
-        rotate, scale, transform, setTransform, resetTransform,
-        set, clear, sleep, fillPolygon, strokePolygon,
-        strokeLines
-    };
+    namespace p
+    {
+        enum COMMANDS {
+            fillRect, strokeRect, fillRects, strokeRects, clearRect, fillArc,
+            fillCircle, strokeArc, strokeCircle, fillArcs, strokeArcs,
+            fillCircles, strokeCircles, strokeLine, beginPath, closePath,
+            stroke, fillPath, fill, moveTo, lineTo,
+            rect, arc, ellipse, arcTo, quadraticCurveTo,
+            bezierCurveTo, fillText, strokeText, setLineDash, drawImage,
+            putImageData, clip, save, restore, translate,
+            rotate, scale, transform, setTransform, resetTransform,
+            set, clear, sleep, fillPolygon, strokePolygon,
+            strokeLines
+        };
+
+        std::map<std::string, std::size_t> ATTRS = {
+            { "fill_style", 0 }, { "stroke_style", 1 }, { "global_alpha", 2 }, { "font", 3 }, { "text_align", 4 },
+            { "text_baseline", 5 }, { "direction", 6 }, { "global_composite_operation", 7 },
+            { "line_width", 8 }, { "line_cap", 9 }, { "line_join", 10 }, { "miter_limit", 11 }, { "line_dash_offset", 12 },
+            { "shadow_offset_x", 13 }, { "shadow_offset_y", 14 }, { "shadow_blur", 15 }, { "shadow_color", 16 }
+        };
+    }
 
     /**********************
      * canvas declaration *
@@ -63,16 +76,31 @@ namespace xc
         void serialize_state(nl::json&, xeus::buffer_sequence&) const;
         void apply_patch(const nl::json&, const xeus::buffer_sequence&);
 
+        template <class T>
+        void notify(const std::string& name, const T& value);
+
+        // TODO Understand why sending the client_ready message too
+        // early kills xeus-cling
+        XPROPERTY(bool, derived_type, _send_client_ready_event, false);
+
         XPROPERTY(int, derived_type, width, 700);
         XPROPERTY(int, derived_type, height, 500);
         XPROPERTY(bool, derived_type, sync_image_data, false);
 
+        XPROPERTY(xw::html_color, derived_type, fill_style, "black");
+        XPROPERTY(xw::html_color, derived_type, stroke_style, "black");
+
         void fill_rect(int x, int y, int width);
         void fill_rect(int x, int y, int width, int height);
+        void stroke_rect(int x, int y, int width);
+        void stroke_rect(int x, int y, int width, int height);
 
+        void clear();
+
+        void cache();
         void flush();
 
-        void handle_custom_message(const nl::json&);
+        // void handle_custom_message(const nl::json&);
 
     protected:
 
@@ -115,6 +143,8 @@ namespace xc
 
         using xw::xwidgets_serialize;
 
+        xwidgets_serialize(_send_client_ready_event(), state["_send_client_ready_event"], buffers);
+
         xwidgets_serialize(width(), state["width"], buffers);
         xwidgets_serialize(height(), state["height"], buffers);
         xwidgets_serialize(sync_image_data(), state["sync_image_data"], buffers);
@@ -133,15 +163,48 @@ namespace xc
     }
 
     template <class D>
+    template <class T>
+    inline void xcanvas<D>::notify(const std::string& name, const T& value)
+    {
+        auto property_idx = p::ATTRS.find(name);
+        if (property_idx != p::ATTRS.end())
+        {
+            send_command(nl::json::array({ p::COMMANDS::set, { property_idx->second, value } }));
+        }
+        else
+        {
+            base_type::notify(name, value);
+        }
+    }
+
+    template <class D>
     inline void xcanvas<D>::fill_rect(int x, int y, int width)
     {
-        send_command(nl::json::array({ COMMANDS::fillRect, { x, y, width, width } }));
+        send_command(nl::json::array({ p::COMMANDS::fillRect, { x, y, width, width } }));
     }
 
     template <class D>
     inline void xcanvas<D>::fill_rect(int x, int y, int width, int height)
     {
-        send_command(nl::json::array({ COMMANDS::fillRect, { x, y, width, height } }));
+        send_command(nl::json::array({ p::COMMANDS::fillRect, { x, y, width, height } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::stroke_rect(int x, int y, int width)
+    {
+        send_command(nl::json::array({ p::COMMANDS::strokeRect, { x, y, width, width } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::stroke_rect(int x, int y, int width, int height)
+    {
+        send_command(nl::json::array({ p::COMMANDS::strokeRect, { x, y, width, height } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::clear()
+    {
+        send_command(nl::json::array({ p::COMMANDS::clear }));
     }
 
     template <class D>
@@ -156,6 +219,12 @@ namespace xc
     }
 
     template <class D>
+    inline void xcanvas<D>::cache()
+    {
+        m_caching = true;
+    }
+
+    template <class D>
     inline void xcanvas<D>::flush()
     {
         nl::json content;
@@ -167,11 +236,12 @@ namespace xc
         this->send(std::move(content), { buffer });
 
         m_commands.clear();
+        m_caching = false;
     }
 
-    template <class D>
-    inline void xcanvas<D>::handle_custom_message(const nl::json& content)
-    {
+    // template <class D>
+    // inline void xcanvas<D>::handle_custom_message(const nl::json& content)
+    // {
         // auto it = content.find("event");
         // if (it != content.end() && it.value() == "interaction")
         // {
@@ -180,7 +250,7 @@ namespace xc
         //         it->operator()(content);
         //     }
         // }
-    }
+    // }
 }
 
 /*********************
