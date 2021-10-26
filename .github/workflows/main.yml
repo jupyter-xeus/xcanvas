@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  run:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - name: Get number of CPU cores
+      uses: SimenB/github-actions-cpu-cores@v1
+
+    - uses: actions/checkout@v2
+
+    - name: Setup conda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        activate-environment: xcanvas-dev
+        environment-file: environment-dev.yml
+        mamba-version: "*"
+        channels: conda-forge
+
+    - name: Conda install dependencies
+      run: mamba install cmake xproperty xwidgets xeus-cling ipycanvas pytest nbval
+
+    - name: Unix, install
+      run: |
+        mkdir build
+        cd build
+        cmake -D CMAKE_INSTALL_PREFIX=$CONDA_PREFIX -D CMAKE_INSTALL_LIBDIR=lib ..
+        make install -j ${{ steps.cpu-cores.outputs.count }}
+
+    - name: Run tests
+      run: pytest .
