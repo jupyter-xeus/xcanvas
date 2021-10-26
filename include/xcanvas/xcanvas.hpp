@@ -174,7 +174,7 @@ namespace xc
         // Image methods
         // TODO
 
-        // Clip
+        // Clip methods
         void clip();
 
         // Transform methods
@@ -419,6 +419,44 @@ namespace xc
     inline void xcanvas<D>::bezier_curve_to(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y)
     {
         send_command(nl::json::array({ p::COMMANDS::bezierCurveTo, { cp1x, cp1y, cp2x, cp2y, x, y } }));
+    }
+
+    /*
+     * Clip methods
+     */
+
+    template <class D>
+    inline void xcanvas<D>::clip()
+    {
+        send_command(nl::json::array({ p::COMMANDS::clip }));
+    }
+
+    /*
+     * Transform methods
+     */
+
+    template <class D>
+    inline void xcanvas<D>::save()
+    {
+        send_command(nl::json::array({ p::COMMANDS::save }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::restore()
+    {
+        send_command(nl::json::array({ p::COMMANDS::restore }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::translate(double x, double y)
+    {
+        send_command(nl::json::array({ p::COMMANDS::translate, { x, y } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::rotate(double angle)
+    {
+        send_command(nl::json::array({ p::COMMANDS::rotate, { angle } }));
     }
 
     /*
