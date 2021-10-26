@@ -56,6 +56,13 @@ set(XCANVAS_BINARY_VERSION
     ${XCANVAS_BINARY_CURRENT}.${XCANVAS_BINARY_REVISION}.${XCANVAS_BINARY_AGE})
 message(STATUS "xcanvas binary version: v${XCANVAS_BINARY_VERSION}")
 
+# Build options
+# =============
+
+option(DISABLE_ARCH_NATIVE "disable -march=native flag" OFF)
+option(XCANVAS_BUILD_SHARED_LIBS "Build xcanvas shared library." ON)
+option(XCANVAS_BUILD_STATIC_LIBS "Build xcanvas static library (default if BUILD_SHARED_LIBS is OFF)." ON)
+
 # Dependencies
 # ============
 
@@ -77,83 +84,109 @@ set(XCANVAS_SOURCES
     ${XCANVAS_SOURCE_DIR}/xcanvas.cpp
 )
 
-# ======
-
-add_library(xcanvas SHARED ${XCANVAS_SOURCES} ${XCANVAS_HEADERS})
-target_include_directories(xcanvas PUBLIC $<BUILD_INTERFACE:${XCANVAS_INCLUDE_DIR}>
-                                           $<INSTALL_INTERFACE:include>)
-
-target_link_libraries(xcanvas
-    PUBLIC xtl
-    PUBLIC xeus
-    PUBLIC xwidgets)
-
-set_target_properties(xcanvas PROPERTIES
-                      PUBLIC_HEADER "${XCANVAS_HEADERS}"
-                      COMPILE_DEFINITIONS "XCANVAS_EXPORTS"
-                      PREFIX ""
-                      VERSION ${XCANVAS_BINARY_VERSION}
-                      SOVERSION ${XCANVAS_BINARY_CURRENT}
-                      OUTPUT_NAME "libxcanvas")
-
-# Compilation flags
-# =================
+# Targets and link
+# ================
 
 include(CheckCXXCompilerFlag)
-string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
-OPTION(DISABLE_ARCH_NATIVE "disable -march=native flag" OFF)
 
-set_target_properties(xcanvas PROPERTIES
-    CXX_EXTENSIONS OFF
-    CXX_STANDARD_REQUIRED 14)
+macro(xcanvas_create_target target_name linkage output_name)
+    string(TOUPPER "${linkage}" linkage_upper)
 
-target_compile_features(xcanvas PRIVATE cxx_std_14)
+    if (NOT ${linkage_upper} MATCHES "^(SHARED|STATIC)$")
+        message(FATAL_ERROR "Invalid library linkage: ${linkage}")
+    endif ()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    target_compile_options(xcanvas PUBLIC -Wunused-parameter -Wextra -Wreorder)
-    if (NOT DISABLE_ARCH_NATIVE)
-        target_compile_options(xcanvas PUBLIC -march=native)
+    if (${linkage_upper} STREQUAL "STATIC")
+        set(XEUS_TARGET_NAME xeus-static)
+        set(XWIDGETS_TARGET_NAME xwidgets-static)
+        else()
+        set(XEUS_TARGET_NAME xeus)
+        set(XWIDGETS_TARGET_NAME xwidgets)
     endif()
 
-    # Enable link time optimization and set the default symbol
-    # visibility to hidden (very important to obtain small binaries)
-    if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-        # Check for Link Time Optimization support
-        # (GCC/Clang)
-        CHECK_CXX_COMPILER_FLAG("-flto" HAS_LTO_FLAG)
-        if (HAS_LTO_FLAG)
-            target_compile_options(xcanvas PUBLIC -flto)
+    # Output
+    # ======
+
+    add_library(${target_name} ${linkage_upper} ${XCANVAS_SOURCES} ${XCANVAS_HEADERS})
+    target_include_directories(${target_name} PUBLIC $<BUILD_INTERFACE:${XCANVAS_INCLUDE_DIR}>
+                                               $<INSTALL_INTERFACE:include>)
+
+    target_link_libraries(${target_name}
+                          PUBLIC xtl
+                          PUBLIC ${XEUS_TARGET_NAME}
+                          PUBLIC xproperty
+                          PUBLIC ${XWIDGETS_TARGET_NAME})
+
+    set_target_properties(${target_name} PROPERTIES
+                          PUBLIC_HEADER "${XCANVAS_HEADERS}"
+                          COMPILE_DEFINITIONS "XCANVAS_EXPORTS"
+                          PREFIX ""
+                          VERSION ${XCANVAS_BINARY_VERSION}
+                          SOVERSION ${XCANVAS_BINARY_CURRENT}
+                          OUTPUT_NAME "lib${output_name}")
+
+    # Compilation flags
+    # =================
+
+    string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
+
+    set_target_properties(${target_name} PROPERTIES
+        CXX_EXTENSIONS OFF
+        CXX_STANDARD_REQUIRED 14)
+
+    target_compile_features(${target_name} PRIVATE cxx_std_14)
+
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+        target_compile_options(${target_name} PUBLIC -Wunused-parameter -Wextra -Wreorder)
+        if (NOT DISABLE_ARCH_NATIVE)
+            target_compile_options(${target_name} PUBLIC -march=native)
         endif()
 
-        # Intel equivalent to LTO is called IPO
-        if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-            CHECK_CXX_COMPILER_FLAG("-ipo" HAS_IPO_FLAG)
-            if (HAS_IPO_FLAG)
-                target_compile_options(xcanvas PUBLIC -ipo)
-            endif()
+        message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+    endif()
+
+    if (${linkage_upper} STREQUAL "STATIC")
+        target_compile_definitions(${target_name} PUBLIC XWIGDETS_STATIC_LIB)
+    endif ()
+
+    if(MSVC)
+        target_compile_definitions(${target_name} PUBLIC -DNOMINMAX)
+        target_compile_options(${target_name} PUBLIC /DGUID_WINDOWS /MP /bigobj)
+        target_compile_options(${target_name} PUBLIC /wd4251 /wd4996)
+        # Allows to compile in debug without requiring each dependencies to
+        # be compiled in debug
+        if(${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+            set(CMAKE_CXX_FLAGS_DEBUG "/DNDEBUG /MD /Zi /Ob0 /Od /RTC1")
+            message(STATUS "Overriding CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
         endif()
     endif()
-    message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+endmacro()
+
+set(xcanvas_targets "")
+
+if (XCANVAS_BUILD_SHARED_LIBS)
+    xcanvas_create_target(xcanvas SHARED xcanvas)
+    list(APPEND xcanvas_targets xcanvas)
 endif()
 
-# if(MSVC)
-#     target_compile_definitions(xcanvas PUBLIC -DNOMINMAX)
-#     target_compile_options(xcanvas PUBLIC /DGUID_WINDOWS /MP /bigobj)
-#     target_compile_options(xcanvas PUBLIC /wd4251 /wd 4996)
-#     # Allows to compile in debug without requiring each dependencies to
-#     # be compiled in debug
-#     if(${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-#         set(CMAKE_CXX_FLAGS_DEBUG "/DNDEBUG /MD /Zi /Ob0 /Od /RTC1")
-#         message(STATUS "Overriding CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
-#     endif()
-# endif()
+if (XCANVAS_BUILD_STATIC_LIBS)
+    # On Windows, a static library should use a different output name
+    # to avoid the conflict with the import library of a shared one.
+    if (CMAKE_HOST_WIN32)
+        xcanvas_create_target(xcanvas-static STATIC xcanvas-static)
+    else ()
+        xcanvas_create_target(xcanvas-static STATIC xcanvas)
+    endif ()
+
+    list(APPEND xcanvas_targets xcanvas-static)
+endif()
 
 # Installation
 # ============
 
 set(XCANVAS_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE STRING "install path for xcanvasConfig.cmake")
 
-install(TARGETS xcanvas
+install(TARGETS ${xcanvas_targets}
         EXPORT ${PROJECT_NAME}-targets
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

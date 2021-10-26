@@ -6,16 +6,26 @@
 # The full license is in the file LICENSE, distributed with this software. #
 ############################################################################
 
-# xwidgets cmake module
+# xcanvas cmake module
 # This module sets the following variables in your project::
 #
 #   xcanvas_FOUND - true if xcanvas found on the system
 #   xcanvas_INCLUDE_DIRS - the directory containing xcanvas headers
-#   xcanvas_LIBRARY - empty
+#   xcanvas_LIBRARY - the library for dynamic linking
 
 @PACKAGE_INIT@
+if(NOT TARGET xcanvas AND NOT TARGET xcanvas-static)
+  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 
-set(PN xcanvas)
-set_and_check(${PN}_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
-set(${PN}_LIBRARY "")
-check_required_components(${PN})
+  if (TARGET xcanvas AND TARGET xcanvas-static)
+    get_target_property(@PROJECT_NAME@_INCLUDE_DIR xcanvas INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(@PROJECT_NAME@_LIBRARY xcanvas LOCATION)
+    get_target_property(@PROJECT_NAME@_STATIC_LIBRARY xcanvas-static LOCATION)
+  elseif (TARGET xcanvas)
+    get_target_property(@PROJECT_NAME@_INCLUDE_DIR xcanvas INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(@PROJECT_NAME@_LIBRARY xcanvas LOCATION)
+  elseif (TARGET xcanvas-static)
+    get_target_property(@PROJECT_NAME@_INCLUDE_DIR xcanvas-static INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(@PROJECT_NAME@_STATIC_LIBRARY xcanvas-static LOCATION)
+  endif()
+endif()
