@@ -336,6 +336,92 @@ namespace xc
     }
 
     /*
+     * Line methods
+     */
+
+    template <class D>
+    inline void xcanvas<D>::stroke_line(double x1, double y1, double x2, double y2)
+    {
+        send_command(nl::json::array({ p::COMMANDS::strokeLine, { x1, y1, x2, y2 } }));
+    }
+
+    /*
+     * Path methods
+     */
+
+    template <class D>
+    inline void xcanvas<D>::begin_path()
+    {
+        send_command(nl::json::array({ p::COMMANDS::beginPath }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::close_path()
+    {
+        send_command(nl::json::array({ p::COMMANDS::closePath }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::stroke()
+    {
+        send_command(nl::json::array({ p::COMMANDS::stroke }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::fill(const std::string& rule)
+    {
+        send_command(nl::json::array({ p::COMMANDS::fill, { rule } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::move_to(double x, double y)
+    {
+        send_command(nl::json::array({ p::COMMANDS::moveTo, { x, y } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::line_to(double x, double y)
+    {
+        send_command(nl::json::array({ p::COMMANDS::lineTo, { x, y } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::rect(double x, double y, double width, double height)
+    {
+        send_command(nl::json::array({ p::COMMANDS::rect, { x, y, width, height } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::arc(double x, double y, double radius, double start_angle, double end_angle, bool anticlockwise)
+    {
+        send_command(nl::json::array({ p::COMMANDS::arc, { x, y, radius, start_angle, end_angle, anticlockwise } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::ellipse(double x, double y, double radius_x, double radius_y, double rotation, double start_angle, double end_angle, bool anticlockwise)
+    {
+        send_command(nl::json::array({ p::COMMANDS::ellipse, { x, y, radius_x, radius_y, rotation, start_angle, end_angle, anticlockwise } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::arc_to(double x1, double y1, double x2, double y2, double radius)
+    {
+        send_command(nl::json::array({ p::COMMANDS::arcTo, { x1, y1, x2, y2, radius } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::quadratic_curve_to(double cp1x, double cp1y, double x, double y)
+    {
+        send_command(nl::json::array({ p::COMMANDS::quadraticCurveTo, { cp1x, cp1y, x, y } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::bezier_curve_to(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y)
+    {
+        send_command(nl::json::array({ p::COMMANDS::bezierCurveTo, { cp1x, cp1y, cp2x, cp2y, x, y } }));
+    }
+
+    /*
      * Extras
      */
 
