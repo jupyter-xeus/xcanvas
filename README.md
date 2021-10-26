@@ -1,5 +1,9 @@
 # xcanvas: The HTML 2D Canvas API brought to xeus-cling
 
+## Try it online
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/martinRenou/xcanvas/HEAD)
+
 ## Documentation
 
 There is currently no documentation for xcanvas, though you can look at the [ipycanvas documentation](https://ipycanvas.readthedocs.io) as xcanvas aims at providing the same API. You can also find an [example notebook on the repo](https://github.com/martinRenou/xcanvas/blob/master/examples/xcanvas.ipynb).

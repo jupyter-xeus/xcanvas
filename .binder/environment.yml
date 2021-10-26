@@ -2,4 +2,5 @@ name: xcanvas
 channels:
   - conda-forge
 dependencies:
+  - xeus-cling
   - xcanvas=0.2.0
