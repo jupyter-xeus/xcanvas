@@ -1,0 +1,5 @@
+name: xcanvas
+channels:
+  - conda-forge
+dependencies:
+  - xcanvas=0.2.0
