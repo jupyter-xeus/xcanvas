@@ -2,6 +2,12 @@
 
 ## Install
 
+### From conda
+
+```bash
+conda install xeus-cling xcanvas -c conda-forge
+```
+
 ### From sources (using conda)
 
 First install dependencies (here using conda):
