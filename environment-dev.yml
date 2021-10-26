@@ -3,9 +3,10 @@ channels:
   - conda-forge
 dependencies:
   - cmake
+  - cxx-compiler
   - xproperty
   - xwidgets
   - ipycanvas >=0.9.1,<0.10
-  - xeus-cling
   - pytest
   - nbval
+  - xeus-cling
