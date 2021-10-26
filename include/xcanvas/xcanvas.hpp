@@ -86,6 +86,46 @@ namespace xc
         XPROPERTY(int, derived_type, width, 700);
         XPROPERTY(int, derived_type, height, 500);
         XPROPERTY(bool, derived_type, sync_image_data, false);
+        XPROPERTY(double, derived_type, global_alpha, 1.0);
+        XPROPERTY(std::string, derived_type, font, "12px serif");
+        XPROPERTY(
+            std::string, derived_type, text_align, "start",
+            XEITHER("start", "end", "left", "right", "center")
+        );
+        XPROPERTY(
+            std::string, derived_type, text_baseline, "alphabetic",
+            XEITHER("top", "hanging", "middle", "alphabetic", "ideographic", "bottom")
+        );
+        XPROPERTY(
+            std::string, derived_type, direction, "inherit",
+            XEITHER("ltr", "rtl", "inherit")
+        );
+        XPROPERTY(
+            std::string, derived_type, global_composite_operation, "source-over",
+            XEITHER(
+                "source-over", "source-in", "source-out", "source-atop",
+                "destination-over", "destination-in", "destination-out",
+                "destination-atop", "lighter", "copy", "xor", "multiply",
+                "screen", "overlay", "darken", "lighten", "color-dodge",
+                "color-burn", "hard-light", "soft-light", "difference",
+                "exclusion", "hue", "saturation", "color", "luminosity"
+            )
+        );
+        XPROPERTY(double, derived_type, shadow_offset_x, 0.0);
+        XPROPERTY(double, derived_type, shadow_offset_y, 0.0);
+        XPROPERTY(double, derived_type, shadow_blur, 0.0);
+        XPROPERTY(xw::html_color, derived_type, shadow_color, "rgba(0, 0, 0, 0)");
+        XPROPERTY(double, derived_type, line_width, 1.0);
+        XPROPERTY(
+            std::string, derived_type, line_cap, "butt",
+            XEITHER("butt", "round", "square")
+        );
+        XPROPERTY(
+            std::string, derived_type, line_join, "miter",
+            XEITHER("round", "bevel", "miter")
+        );
+        XPROPERTY(double, derived_type, miter_limit, 10.0);
+        XPROPERTY(double, derived_type, line_dash_offset, 0.0);
 
         XPROPERTY(xw::html_color, derived_type, fill_style, "black");
         XPROPERTY(xw::html_color, derived_type, stroke_style, "black");
