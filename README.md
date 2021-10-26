@@ -1,6 +1,12 @@
 # xcanvas: The HTML 2D Canvas API brought to xeus-cling
 
-## Install
+## Documentation
+
+There is currently no documentation for xcanvas, though you can look at the [ipycanvas documentation](https://ipycanvas.readthedocs.io) as xcanvas aims at providing the same API. You can also find an [example notebook on the repo](https://github.com/martinRenou/xcanvas/blob/master/examples/xcanvas.ipynb).
+
+Note that xcanvas does not (yet) provide the full implemtation that ipycanvas provides.
+
+## Installation
 
 ### From conda
 
@@ -24,3 +30,7 @@ cd build
 cmake -D CMAKE_INSTALL_PREFIX=$CONDA_PREFIX
 make install
 ```
+
+## Showcase
+
+![xcanvas example](xcanvas.gif)
