@@ -130,11 +130,61 @@ namespace xc
         XPROPERTY(xw::html_color, derived_type, fill_style, "black");
         XPROPERTY(xw::html_color, derived_type, stroke_style, "black");
 
-        void fill_rect(int x, int y, int width);
-        void fill_rect(int x, int y, int width, int height);
-        void stroke_rect(int x, int y, int width);
-        void stroke_rect(int x, int y, int width, int height);
+        // Rect methods
+        void fill_rect(double x, double y, double width);
+        void fill_rect(double x, double y, double width, double height);
+        void stroke_rect(double x, double y, double width);
+        void stroke_rect(double x, double y, double width, double height);
+        void clear_rect(double x, double y, double width);
+        void clear_rect(double x, double y, double width, double height);
 
+        // Arc methods
+        void fill_arc(double x, double y, double radius, double start_angle, double end_angle, bool anticlockwise=false);
+        void fill_circle(double x, double y, double radius);
+        void stroke_arc(double x, double y, double radius, double start_angle, double end_angle, bool anticlockwise=false);
+        void stroke_circle(double x, double y, double radius);
+
+        // Polygon methods
+        // TODO
+
+        // Line methods
+        void stroke_line(double x1, double y1, double x2, double y2);
+
+        // Path methods
+        void begin_path();
+        void close_path();
+        void stroke();
+        void fill(const std::string& rule="nonzero");
+        // void fill(const path2D& path);
+        void move_to(double x, double y);
+        void line_to(double x, double y);
+        void rect(double x, double y, double width, double height);
+        void arc(double x, double y, double radius, double start_angle, double end_angle, bool anticlockwise=false);
+        void ellipse(double x, double y, double radius_x, double radius_y, double rotation, double start_angle, double end_angle, bool anticlockwise=false);
+        void arc_to(double x1, double y1, double x2, double y2, double radius);
+        void quadratic_curve_to(double cp1x, double cp1y, double x, double y);
+        void bezier_curve_to(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
+
+        // Text methods
+        // TODO
+
+        // Line style methods
+        // TODO
+
+        // Image methods
+        // TODO
+
+        // Clip
+        void clip();
+
+        // Transform methods
+        void save();
+        void restore();
+        void translate(double x, double y);
+        void rotate(double angle);
+        // TODO
+
+        // Extras
         void clear();
 
         void cache();
@@ -217,29 +267,77 @@ namespace xc
         }
     }
 
+    /*
+     * Rect methods
+     */
+
     template <class D>
-    inline void xcanvas<D>::fill_rect(int x, int y, int width)
+    inline void xcanvas<D>::fill_rect(double x, double y, double width)
     {
         send_command(nl::json::array({ p::COMMANDS::fillRect, { x, y, width, width } }));
     }
 
     template <class D>
-    inline void xcanvas<D>::fill_rect(int x, int y, int width, int height)
+    inline void xcanvas<D>::fill_rect(double x, double y, double width, double height)
     {
         send_command(nl::json::array({ p::COMMANDS::fillRect, { x, y, width, height } }));
     }
 
     template <class D>
-    inline void xcanvas<D>::stroke_rect(int x, int y, int width)
+    inline void xcanvas<D>::stroke_rect(double x, double y, double width)
     {
         send_command(nl::json::array({ p::COMMANDS::strokeRect, { x, y, width, width } }));
     }
 
     template <class D>
-    inline void xcanvas<D>::stroke_rect(int x, int y, int width, int height)
+    inline void xcanvas<D>::stroke_rect(double x, double y, double width, double height)
     {
         send_command(nl::json::array({ p::COMMANDS::strokeRect, { x, y, width, height } }));
     }
+
+    template <class D>
+    inline void xcanvas<D>::clear_rect(double x, double y, double width)
+    {
+        send_command(nl::json::array({ p::COMMANDS::clearRect, { x, y, width, width } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::clear_rect(double x, double y, double width, double height)
+    {
+        send_command(nl::json::array({ p::COMMANDS::clearRect, { x, y, width, height } }));
+    }
+
+    /*
+     * Arc methods
+     */
+
+    template <class D>
+    inline void xcanvas<D>::fill_arc(double x, double y, double radius, double start_angle, double end_angle, bool anticlockwise)
+    {
+        send_command(nl::json::array({ p::COMMANDS::fillArc, { x, y, radius, start_angle, end_angle, anticlockwise } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::fill_circle(double x, double y, double radius)
+    {
+        send_command(nl::json::array({ p::COMMANDS::fillCircle, { x, y, radius } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::stroke_arc(double x, double y, double radius, double start_angle, double end_angle, bool anticlockwise)
+    {
+        send_command(nl::json::array({ p::COMMANDS::strokeArc, { x, y, radius, start_angle, end_angle, anticlockwise } }));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::stroke_circle(double x, double y, double radius)
+    {
+        send_command(nl::json::array({ p::COMMANDS::strokeCircle, { x, y, radius } }));
+    }
+
+    /*
+     * Extras
+     */
 
     template <class D>
     inline void xcanvas<D>::clear()
