@@ -63,7 +63,7 @@ namespace xc
                 { "line_width", 8 }, { "line_cap", 9 }, { "line_join", 10 }, { "miter_limit", 11 }, { "line_dash_offset", 12 },
                 { "shadow_offset_x", 13 }, { "shadow_offset_y", 14 }, { "shadow_blur", 15 }, { "shadow_color", 16 }
             };
-            return ATTR;
+            return ATTRS;
         } 
     }
 
