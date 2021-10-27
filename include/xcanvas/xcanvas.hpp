@@ -53,12 +53,18 @@ namespace xc
             strokeLines
         };
 
-        std::map<std::string, std::size_t> ATTRS = {
-            { "fill_style", 0 }, { "stroke_style", 1 }, { "global_alpha", 2 }, { "font", 3 }, { "text_align", 4 },
-            { "text_baseline", 5 }, { "direction", 6 }, { "global_composite_operation", 7 },
-            { "line_width", 8 }, { "line_cap", 9 }, { "line_join", 10 }, { "miter_limit", 11 }, { "line_dash_offset", 12 },
-            { "shadow_offset_x", 13 }, { "shadow_offset_y", 14 }, { "shadow_blur", 15 }, { "shadow_color", 16 }
-        };
+    
+
+        inline const std::map<std::string, std::size_t> & get_attr()
+        {
+            static std::map<std::string, std::size_t> ATTRS = {
+                { "fill_style", 0 }, { "stroke_style", 1 }, { "global_alpha", 2 }, { "font", 3 }, { "text_align", 4 },
+                { "text_baseline", 5 }, { "direction", 6 }, { "global_composite_operation", 7 },
+                { "line_width", 8 }, { "line_cap", 9 }, { "line_join", 10 }, { "miter_limit", 11 }, { "line_dash_offset", 12 },
+                { "shadow_offset_x", 13 }, { "shadow_offset_y", 14 }, { "shadow_blur", 15 }, { "shadow_color", 16 }
+            };
+            return ATTRS;
+        } 
     }
 
     /**********************
@@ -256,8 +262,8 @@ namespace xc
     template <class T>
     inline void xcanvas<D>::notify(const std::string& name, const T& value)
     {
-        auto property_idx = p::ATTRS.find(name);
-        if (property_idx != p::ATTRS.end())
+        auto property_idx = p::get_attr().find(name);
+        if (property_idx != p::get_attr().end())
         {
             send_command(nl::json::array({ p::COMMANDS::set, { property_idx->second, value } }));
         }
