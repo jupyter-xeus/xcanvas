@@ -25,7 +25,7 @@
 // Project version
 #define XCANVAS_VERSION_MAJOR 0
 #define XCANVAS_VERSION_MINOR 2
-#define XCANVAS_VERSION_PATCH 2
+#define XCANVAS_VERSION_PATCH 3
 
 // Binary version
 #define XCANVAS_BINARY_CURRENT 1
