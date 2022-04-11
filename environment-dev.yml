@@ -6,7 +6,7 @@ dependencies:
   - cxx-compiler
   - xproperty
   - xwidgets
-  - ipycanvas >=0.9.1,<0.10
+  - ipycanvas >=0.11.0,<0.12
   - pytest
   - nbval
   - xeus-cling
