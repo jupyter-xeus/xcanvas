@@ -31,7 +31,7 @@ Then compile:
 ```bash
 mkdir build
 cd build
-cmake -D CMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+cmake -D CMAKE_INSTALL_PREFIX=$CONDA_PREFIX ..
 make install
 ```
 
