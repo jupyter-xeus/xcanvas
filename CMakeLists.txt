@@ -59,7 +59,6 @@ message(STATUS "xcanvas binary version: v${XCANVAS_BINARY_VERSION}")
 # Build options
 # =============
 
-option(DISABLE_ARCH_NATIVE "disable -march=native flag" OFF)
 option(XCANVAS_BUILD_SHARED_LIBS "Build xcanvas shared library." ON)
 option(XCANVAS_BUILD_STATIC_LIBS "Build xcanvas static library (default if BUILD_SHARED_LIBS is OFF)." ON)
 
@@ -67,7 +66,7 @@ option(XCANVAS_BUILD_STATIC_LIBS "Build xcanvas static library (default if BUILD
 # ============
 
 find_package(xtl 0.7.0 REQUIRED)
-find_package(xeus 2.0.0 REQUIRED)
+find_package(xeus-zmq 1.0.0 REQUIRED)
 find_package(xproperty 0.11.0 REQUIRED)
 find_package(xwidgets 0.20.0 REQUIRED)
 
@@ -97,10 +96,10 @@ macro(xcanvas_create_target target_name linkage output_name)
     endif ()
 
     if (${linkage_upper} STREQUAL "STATIC")
-        set(XEUS_TARGET_NAME xeus-static)
+        set(XEUS_ZMQ_TARGET_NAME xeus-zmq-static)
         set(XWIDGETS_TARGET_NAME xwidgets-static)
         else()
-        set(XEUS_TARGET_NAME xeus)
+            set(XEUS_ZMQ_TARGET_NAME xeus-zmq)
         set(XWIDGETS_TARGET_NAME xwidgets)
     endif()
 
@@ -113,7 +112,7 @@ macro(xcanvas_create_target target_name linkage output_name)
 
     target_link_libraries(${target_name}
                           PUBLIC xtl
-                          PUBLIC ${XEUS_TARGET_NAME}
+                          PUBLIC ${XEUS_ZMQ_TARGET_NAME}
                           PUBLIC xproperty
                           PUBLIC ${XWIDGETS_TARGET_NAME})
 
@@ -138,11 +137,6 @@ macro(xcanvas_create_target target_name linkage output_name)
 
     if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
         target_compile_options(${target_name} PUBLIC -Wunused-parameter -Wextra -Wreorder)
-        if (NOT DISABLE_ARCH_NATIVE)
-            target_compile_options(${target_name} PUBLIC -march=native)
-        endif()
-
-        message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
     endif()
 
     if (${linkage_upper} STREQUAL "STATIC")
