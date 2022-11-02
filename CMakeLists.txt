@@ -33,7 +33,7 @@ configure_file (
 
 file(STRINGS "${XCANVAS_INCLUDE_DIR}/xcanvas/xcanvas_config.hpp" xcanvas_version_defines
      REGEX "#define XCANVAS_VERSION_(MAJOR|MINOR|PATCH)")
-foreach(ver ${xCANVAS_version_defines})
+foreach(ver ${xcanvas_version_defines})
     if(ver MATCHES "#define XCANVAS_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
         set(XCANVAS_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
     endif()
