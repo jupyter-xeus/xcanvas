@@ -66,9 +66,9 @@ option(XCANVAS_BUILD_STATIC_LIBS "Build xcanvas static library (default if BUILD
 # ============
 
 find_package(xtl 0.7.0 REQUIRED)
-find_package(xeus-zmq 1.0.0 REQUIRED)
+find_package(xeus 3.0.1 REQUIRED)
 find_package(xproperty 0.11.0 REQUIRED)
-find_package(xwidgets 0.20.0 REQUIRED)
+find_package(xwidgets 0.27.0 REQUIRED)
 
 # Source files
 # ============
@@ -96,10 +96,10 @@ macro(xcanvas_create_target target_name linkage output_name)
     endif ()
 
     if (${linkage_upper} STREQUAL "STATIC")
-        set(XEUS_ZMQ_TARGET_NAME xeus-zmq-static)
+        set(XEUS_TARGET_NAME xeus-static)
         set(XWIDGETS_TARGET_NAME xwidgets-static)
         else()
-            set(XEUS_ZMQ_TARGET_NAME xeus-zmq)
+            set(XEUS_TARGET_NAME xeus)
         set(XWIDGETS_TARGET_NAME xwidgets)
     endif()
 
@@ -112,7 +112,7 @@ macro(xcanvas_create_target target_name linkage output_name)
 
     target_link_libraries(${target_name}
                           PUBLIC xtl
-                          PUBLIC ${XEUS_ZMQ_TARGET_NAME}
+                          PUBLIC ${XEUS_TARGET_NAME}
                           PUBLIC xproperty
                           PUBLIC ${XWIDGETS_TARGET_NAME})
 
