@@ -4,6 +4,7 @@ channels:
 dependencies:
   - cmake
   - cxx-compiler
+  - ninja
   - xproperty
   - xwidgets
   - ipycanvas >=0.11.0,<0.12

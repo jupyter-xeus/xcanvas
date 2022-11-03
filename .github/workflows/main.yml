@@ -13,13 +13,14 @@ defaults:
     shell: bash -l {0}
 
 jobs:
-  run:
+  unix:
+
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11]
 
     steps:
     - name: Get number of CPU cores
@@ -46,3 +47,35 @@ jobs:
 
     - name: Run tests
       run: pytest .
+
+  win:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-2019, windows-2022 ]
+
+    steps:
+    - name: Get number of CPU cores
+      uses: SimenB/github-actions-cpu-cores@v1
+
+    - uses: actions/checkout@v2
+
+    - name: Setup mamba
+      uses: mamba-org/provision-with-micromamba@main
+      with:
+        environment-file: environment-dev.yml
+
+    - name: Install xcanvas
+      run: |
+        mkdir build
+        cd build
+        cmake .. ^
+          -G Ninaj ^
+          -D CMAKE_PREFIX_PATH=%CONDA_PREFIX%\Library% ^
+          -D CMAKE_INSTALL_PREFIX=%CONDA_PREFIX%\Library ^
+          -D CMAKE_C_COMPILER=%CC% ^
+          -D CMAKE_CXX_COMPILER=%CXX%
+        ninja install
