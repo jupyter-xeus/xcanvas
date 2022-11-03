@@ -65,9 +65,21 @@ option(XCANVAS_BUILD_STATIC_LIBS "Build xcanvas static library (default if BUILD
 # Dependencies
 # ============
 
-find_package(xtl 0.7.0 REQUIRED)
-find_package(xproperty 0.11.0 REQUIRED)
-find_package(xwidgets 0.20.0 REQUIRED)
+set(xtl_REQUIRED_VERSION 0.7.0)
+set(xproperty_REQUIRED_VERSION 0.11.0)
+set(xwidgets_REQUIRED_VERSION 0.27.1)
+
+if (NOT TARGET xtl)
+    find_package(xtl ${xtl_REQUIRED_VERSION} REQUIRED)
+endif ()
+
+if (NOT TARGET xproperty)
+    find_package(xproperty ${xproperty_REQUIRED_VERSION} REQUIRED)
+endif ()
+
+if (NOT TARGET xwidgets)
+    find_package(xwidgets ${xwidgets_REQUIRED_VERSION} REQUIRED)
+endif ()
 
 # Source files
 # ============
@@ -187,6 +199,16 @@ install(TARGETS ${xcanvas_targets}
 export(EXPORT ${PROJECT_NAME}-targets
        FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
+# Configure 'xcanvasConfig.cmake' for a build tree
+set(XCANVAS_CONFIG_CODE "####### Expanded from \@XCANVAS_CONFIG_CODE\@ #######\n")
+set(XCANVAS_CONFIG_CODE "${XCANVAS_CONFIG_CODE}set(CMAKE_MODULE_PATH \"${CMAKE_CURRENT_SOURCE_DIR}/cmake;\${CMAKE_MODULE_PATH}\")\n")
+set(XCANVAS_CONFIG_CODE "${XCANVAS_CONFIG_CODE}##################################################")
+configure_package_config_file(${PROJECT_NAME}Config.cmake.in
+                              "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+                              INSTALL_DESTINATION ${PROJECT_BINARY_DIR})
+
+# Configure 'xcanvasConfig.cmake' for an install tree
+set(XCANVAS_CONFIG_CODE "")
 configure_package_config_file(${PROJECT_NAME}Config.cmake.in
                               "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
                               INSTALL_DESTINATION ${XCANVAS_CMAKECONFIG_INSTALL_DIR})
