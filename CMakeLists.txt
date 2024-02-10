@@ -139,9 +139,9 @@ macro(xcanvas_create_target target_name linkage output_name)
 
     set_target_properties(${target_name} PROPERTIES
         CXX_EXTENSIONS OFF
-        CXX_STANDARD_REQUIRED 14)
+        CXX_STANDARD_REQUIRED 17)
 
-    target_compile_features(${target_name} PRIVATE cxx_std_14)
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
 
     if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
         target_compile_options(${target_name} PUBLIC -Wunused-parameter -Wextra -Wreorder)
