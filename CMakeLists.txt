@@ -65,13 +65,8 @@ option(XCANVAS_BUILD_STATIC_LIBS "Build xcanvas static library (default if BUILD
 # Dependencies
 # ============
 
-set(xtl_REQUIRED_VERSION 0.7.0)
 set(xproperty_REQUIRED_VERSION 0.11.0)
 set(xwidgets_REQUIRED_VERSION 0.27.1)
-
-if (NOT TARGET xtl)
-    find_package(xtl ${xtl_REQUIRED_VERSION} REQUIRED)
-endif ()
 
 if (NOT TARGET xproperty)
     find_package(xproperty ${xproperty_REQUIRED_VERSION} REQUIRED)
@@ -120,7 +115,6 @@ macro(xcanvas_create_target target_name linkage output_name)
                                                $<INSTALL_INTERFACE:include>)
 
     target_link_libraries(${target_name}
-                          PUBLIC xtl
                           PUBLIC xproperty
                           PUBLIC ${XWIDGETS_TARGET_NAME})
 
