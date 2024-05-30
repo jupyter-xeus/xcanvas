@@ -19,8 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include "xtl/xoptional.hpp"
-
 #include "nlohmann/json.hpp"
 
 #include "xwidgets/xcolor.hpp"
