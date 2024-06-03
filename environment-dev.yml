@@ -6,7 +6,7 @@ dependencies:
   - cxx-compiler
   - xproperty
   - xwidgets >=0.29.0
-  - ipycanvas >=0.12.0,<0.13
+  - ipycanvas >=0.11.0,<0.12
   - pytest
   - nbval
 # TODO: replace xeus-cling with xeus(cpp when it is available
