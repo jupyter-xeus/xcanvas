@@ -75,6 +75,11 @@ namespace xc
         using base_type = xw::xwidget<D>;
         using derived_type = D;
 
+        // callbacks which have the position of the mouse
+        // as payload (mousemove, mousedown, mouseup,
+        // mouseenter, mouseleave, touchstart, touchmove, touchend)
+        using xy_callback_type = std::function<void(int, int)>;
+
         void serialize_state(nl::json&, xeus::buffer_sequence&) const;
         void apply_patch(const nl::json&, const xeus::buffer_sequence&);
 
@@ -192,7 +197,18 @@ namespace xc
         void cache();
         void flush();
 
-        // void handle_custom_message(const nl::json&);
+        // on_ methods for mouse and touch events
+        void on_mouse_move(xy_callback_type cb);
+        void on_mouse_down(xy_callback_type cb);
+        void on_mouse_up(xy_callback_type cb);
+        void on_mouse_leave(xy_callback_type cb);
+
+        void on_touch_start(xy_callback_type cb);
+        void on_touch_move(xy_callback_type cb);
+        void on_touch_end(xy_callback_type cb);
+        void on_touch_cancel(xy_callback_type cb);
+
+        void handle_custom_message(const nl::json&);
 
     protected:
 
@@ -205,6 +221,11 @@ namespace xc
 
         nl::json m_commands;
         bool m_caching;
+
+
+
+        // handlers for mouse and touch events
+        std::map<std::string, std::vector<xy_callback_type>> m_xy_callbacks;
     };
 
     using canvas = xw::xmaterialize<xcanvas>;
@@ -503,18 +524,71 @@ namespace xc
         m_caching = false;
     }
 
-    // template <class D>
-    // inline void xcanvas<D>::handle_custom_message(const nl::json& content)
-    // {
-        // auto it = content.find("event");
-        // if (it != content.end() && it.value() == "interaction")
-        // {
-        //     for (auto it = m_interaction_callbacks.begin(); it != m_interaction_callbacks.end(); ++it)
-        //     {
-        //         it->operator()(content);
-        //     }
-        // }
-    // }
+    template <class D>
+    inline void xcanvas<D>::on_mouse_move(xy_callback_type cb)
+    {
+        m_xy_callbacks["mouse_move"].emplace_back(std::move(cb));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::on_mouse_down(xy_callback_type cb)
+    {
+        m_xy_callbacks["mouse_down"].emplace_back(std::move(cb));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::on_mouse_up(xy_callback_type cb)
+    {
+        m_xy_callbacks["mouse_up"].emplace_back(std::move(cb));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::on_mouse_leave(xy_callback_type cb)        
+    {
+        m_xy_callbacks["mouse_leave"].emplace_back(std::move(cb));
+    }
+    
+    template <class D>
+    inline void xcanvas<D>::on_touch_start(xy_callback_type cb)
+    {
+        m_xy_callbacks["touch_start"].emplace_back(std::move(cb));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::on_touch_move(xy_callback_type cb) 
+    {
+        m_xy_callbacks["touch_move"].emplace_back(std::move(cb));
+    }
+    template <class D>
+    inline void xcanvas<D>::on_touch_end(xy_callback_type cb)
+    {
+        m_xy_callbacks["touch_end"].emplace_back(std::move(cb));
+    }
+    template <class D>
+    inline void xcanvas<D>::on_touch_cancel(xy_callback_type cb)
+    {
+        m_xy_callbacks["touch_cancel"].emplace_back(std::move(cb));
+    }
+
+    template <class D>
+    inline void xcanvas<D>::handle_custom_message(const nl::json& content)
+    {
+
+        auto const event_it = content.find("event");
+        if (event_it != content.end())
+        {
+            auto event = event_it.value();
+            if (m_xy_callbacks.find(event) != m_xy_callbacks.end())
+            {
+                int x = content["x"];
+                int y = content["y"];
+                for (auto& callback : m_xy_callbacks[event])
+                {
+                    callback(x, y);
+                }
+            }
+        }
+    }
 }
 
 /*********************

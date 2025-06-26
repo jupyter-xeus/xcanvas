@@ -35,7 +35,7 @@
 // Semver requirement for jupyter-canvas
 #define XJUPYTER_CANVAS_VERSION_MAJOR 0
 #define XJUPYTER_CANVAS_VERSION_MINOR 11
-#define XJUPYTER_CANVAS_VERSION_PATCH 1
+#define XJUPYTER_CANVAS_VERSION_PATCH 0
 
 // Composing the version strings from major, minor and patch
 #define XCANVAS_CONCATENATE(A, B) XCANVAS_CONCATENATE_IMPL(A, B)
