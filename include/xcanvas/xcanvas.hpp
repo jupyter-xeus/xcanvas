@@ -222,8 +222,6 @@ namespace xc
         nl::json m_commands;
         bool m_caching;
 
-
-
         // handlers for mouse and touch events
         std::map<std::string, std::vector<xy_callback_type>> m_xy_callbacks;
     };
