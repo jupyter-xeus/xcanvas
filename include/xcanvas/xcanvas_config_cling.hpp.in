@@ -9,7 +9,19 @@
 #ifndef XCANVAS_CONFIG_CLING_HPP
 #define XCANVAS_CONFIG_CLING_HPP
 
+#ifdef __CLING__
+
 #pragma cling add_library_path(@XCANVAS_INSTALL_LIBRARY_DIR@)
 #pragma cling load("libxcanvas")
 
+#elif defined(__EMSCRIPTEN__) && defined(__CLANG_REPL__)
+
+#include <clang/Interpreter/CppInterOp.h>
+static bool _xcanvas_loaded = []() {
+    Cpp::LoadLibrary(@XCANVAS_CPPINTEROP_LIBRARY_PATH@, false);
+    return true;
+}();
+
 #endif
+
+#endif // XCANVAS_CONFIG_CLING_HPP
