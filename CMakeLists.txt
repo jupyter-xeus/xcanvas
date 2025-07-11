@@ -12,17 +12,6 @@ project(xcanvas)
 message(STATUS "Forcing tests build type to Release")
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 
-if(EMSCRIPTEN)
-    set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
-    set(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "-s SIDE_MODULE=1")
-    set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "-s SIDE_MODULE=1")
-    set(CMAKE_STRIP FALSE)
-
-    # Define the path to the shared library for use with CppInterOp dynamic loading
-    set(XCANVAS_CPPINTEROP_LIBRARY_PATH "\"/lib/${CMAKE_SHARED_LIBRARY_PREFIX}xcanvas${CMAKE_SHARED_LIBRARY_SUFFIX}\"")
-    message(STATUS "XCANVAS_CPPINTEROP_LIBRARY_PATH = ${XCANVAS_CPPINTEROP_LIBRARY_PATH}")
-endif()
-
 set(XCANVAS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(XCANVAS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
@@ -128,9 +117,6 @@ macro(xcanvas_create_target target_name linkage output_name)
     target_link_libraries(${target_name}
                           PUBLIC xproperty
                           PUBLIC ${XWIDGETS_TARGET_NAME})
-    if(EMSCRIPTEN)
-        set_target_properties(${target_name} PROPERTIES NO_SONAME 1)
-    endif()
 
     set_target_properties(${target_name} PROPERTIES
                           PUBLIC_HEADER "${XCANVAS_HEADERS}"

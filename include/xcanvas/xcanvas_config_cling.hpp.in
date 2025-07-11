@@ -18,7 +18,7 @@
 
 #include <clang/Interpreter/CppInterOp.h>
 static bool _xcanvas_loaded = []() {
-    Cpp::LoadLibrary(@XCANVAS_CPPINTEROP_LIBRARY_PATH@, false);
+    Cpp::LoadLibrary("/lib/@CMAKE_SHARED_LIBRARY_PREFIX@xcanvas@CMAKE_SHARED_LIBRARY_SUFFIX@", false);
     return true;
 }();
 
