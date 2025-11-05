@@ -25,11 +25,11 @@
 // Project version
 #define XCANVAS_VERSION_MAJOR 0
 #define XCANVAS_VERSION_MINOR 6
-#define XCANVAS_VERSION_PATCH 0
+#define XCANVAS_VERSION_PATCH 1
 
 // Binary version
 #define XCANVAS_BINARY_CURRENT 3
-#define XCANVAS_BINARY_REVISION 0
+#define XCANVAS_BINARY_REVISION 1
 #define XCANVAS_BINARY_AGE 0
 
 // Semver requirement for jupyter-canvas
