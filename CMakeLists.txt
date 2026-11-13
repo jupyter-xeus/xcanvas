@@ -118,13 +118,33 @@ macro(xcanvas_create_target target_name linkage output_name)
                           PUBLIC xproperty
                           PUBLIC ${XWIDGETS_TARGET_NAME})
 
-    set_target_properties(${target_name} PROPERTIES
-                          PUBLIC_HEADER "${XCANVAS_HEADERS}"
-                          COMPILE_DEFINITIONS "XCANVAS_EXPORTS"
-                          PREFIX ""
-                          VERSION ${XCANVAS_BINARY_VERSION}
-                          SOVERSION ${XCANVAS_BINARY_CURRENT}
-                          OUTPUT_NAME "lib${output_name}")
+    if(UNIX)
+        # CMake does not compute the version number of so files as libtool does on Linux. Strictly speaking,
+        # we should exclude FreeBSD and Apple from this, but that would require having different version
+        # numbers depending on the platform. We prefer to follow the libtool pattern everywhere.
+        math(EXPR XCANVAS_BINARY_COMPATIBLE "${XCANVAS_BINARY_CURRENT} - ${XCANVAS_BINARY_AGE}")
+        set_target_properties(
+            ${target_name}
+            PROPERTIES
+                PUBLIC_HEADER "${XCANVAS_HEADERS}"
+                COMPILE_DEFINITIONS "XCANVAS_EXPORTS"
+                PREFIX ""
+                VERSION "${XCANVAS_BINARY_COMPATIBLE}.${XCANVAS_BINARY_AGE}.${XCANVAS_BINARY_REVISION}"
+                SOVERSION ${XCANVAS_BINARY_COMPATIBLE}
+                OUTPUT_NAME "lib${output_name}"
+        )
+    else()
+        set_target_properties(
+            ${target_name}
+            PROPERTIES
+                PUBLIC_HEADER "${XCANVAS_HEADERS}"
+                COMPILE_DEFINITIONS "XCANVAS_EXPORTS"
+                PREFIX ""
+                VERSION ${XCANVAS_BINARY_VERSION}
+                SOVERSION ${XCANVAS_BINARY_CURRENT}
+                OUTPUT_NAME "lib${output_name}"
+        )
+    endif()
 
     # Compilation flags
     # =================
