@@ -88,11 +88,11 @@ namespace xc
 
         // TODO Understand why sending the client_ready message too
         // early kills xeus-cling
-        XPROPERTY(bool, derived_type, _send_client_ready_event, false);
+        XPROPERTY(bool, xw::xcommon, _send_client_ready_event, false);
 
-        XPROPERTY(int, derived_type, width, 700);
-        XPROPERTY(int, derived_type, height, 500);
-        XPROPERTY(bool, derived_type, sync_image_data, false);
+        XPROPERTY(int, xw::xcommon, width, 700);
+        XPROPERTY(int, xw::xcommon, height, 500);
+        XPROPERTY(bool, xw::xcommon, sync_image_data, false);
         XPROPERTY(double, derived_type, global_alpha, 1.0);
         XPROPERTY(std::string, derived_type, font, "12px serif");
         XPROPERTY(
@@ -265,12 +265,6 @@ namespace xc
     inline void xcanvas<D>::apply_patch(const nl::json& patch, const xeus::buffer_sequence& buffers)
     {
         base_type::apply_patch(patch, buffers);
-
-        using xw::set_property_from_patch;
-
-        set_property_from_patch(width, patch, buffers);
-        set_property_from_patch(height, patch, buffers);
-        set_property_from_patch(sync_image_data, patch, buffers);
     }
 
     template <class D>

@@ -14,11 +14,26 @@
 #pragma cling add_library_path(@XCANVAS_INSTALL_LIBRARY_DIR@)
 #pragma cling load("libxcanvas")
 
-#elif defined(__EMSCRIPTEN__) && defined(__CLANG_REPL__)
+#elif defined(__CLANG_REPL__)
 
+#if defined(__has_include)
+// Newer CppInterOp>=1.8.0
+#if __has_include("CppInterOp/CppInterOp.h")
+#include <CppInterOp/CppInterOp.h>
+// Older
+#else
 #include <clang/Interpreter/CppInterOp.h>
+#endif
+#endif  // __has_include
+
 static bool _xcanvas_loaded = []() {
-    Cpp::LoadLibrary("/lib/@CMAKE_SHARED_LIBRARY_PREFIX@xcanvas@CMAKE_SHARED_LIBRARY_SUFFIX@", false);
+    Cpp::LoadLibrary(
+#ifdef __EMSCRIPTEN__
+        "/lib/@CMAKE_SHARED_LIBRARY_PREFIX@xcanvas@CMAKE_SHARED_LIBRARY_SUFFIX@",
+#else
+        @XCANVAS_INSTALL_LIBRARY_DIR@ "/@CMAKE_SHARED_LIBRARY_PREFIX@xcanvas@CMAKE_SHARED_LIBRARY_SUFFIX@",
+#endif
+        false);
     return true;
 }();
 

@@ -56,7 +56,7 @@ inline std::string jupyter_canvas_semver()
 #include "xcanvas_config_cling.hpp"
 #endif
 
-#if defined(__CLANG_REPL__) && defined(__EMSCRIPTEN__)
+#ifdef __CLANG_REPL__
 #include "xcanvas_config_cling.hpp"
 #endif
 

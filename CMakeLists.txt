@@ -65,8 +65,8 @@ option(XCANVAS_BUILD_STATIC_LIBS "Build xcanvas static library (default if BUILD
 # Dependencies
 # ============
 
-set(xproperty_REQUIRED_VERSION 0.12.1)
-set(xwidgets_REQUIRED_VERSION 0.30.0)
+set(xproperty_REQUIRED_VERSION 0.13.1)
+set(xwidgets_REQUIRED_VERSION 0.31.1)
 
 if (NOT TARGET xproperty)
     find_package(xproperty ${xproperty_REQUIRED_VERSION} REQUIRED)
