@@ -5,7 +5,7 @@ dependencies:
   - cmake
   - cxx-compiler
   - xproperty
-  - xwidgets >=0.30,<0.31
+  - xwidgets >=0.31.1,<0.32
   - nlohmann_json
   - ipycanvas >=0.11.0,<0.12
   - pytest
